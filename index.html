@@ -476,20 +476,10 @@ document
         "送出中…";
 
 
-      const payload = {
-
-        rating: rating,
-
-        favorite_employee_id:
-          favorite || null,
-
-        unfriendly_employee_id:
-          unfriendly || null,
-
-        comment:
-          comment || null
-
-      };
+   const payload = {
+  overall_rating: rating,
+  improvement_comment: comment || null
+};
 
 
       const { error } =
