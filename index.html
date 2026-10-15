@@ -332,7 +332,33 @@ const client = supabase.createClient(
 
 
 let rating = 0;
+const REVIEW_STORAGE_KEY = "nice_hand_last_review";
+const REVIEW_LIMIT_DAYS = 30;
 
+function checkReviewLimit() {
+
+  const lastReview =
+    localStorage.getItem(REVIEW_STORAGE_KEY);
+
+  if (!lastReview) {
+    return false;
+  }
+
+  const lastTime =
+    Number(lastReview);
+
+  const now =
+    Date.now();
+
+  const limitTime =
+    REVIEW_LIMIT_DAYS *
+    24 *
+    60 *
+    60 *
+    1000;
+
+  return (now - lastTime) < limitTime;
+}
 
 const stars =
   document.querySelectorAll(".star");
@@ -445,7 +471,16 @@ document
       const comment =
         document.getElementById("comment").value.trim();
 
+      if (checkReviewLimit()) {
 
+        showMessage(
+          "感謝您的回饋！本裝置近期已完成服務評價，每 30 天可填寫一次。",
+          "error"
+        );
+
+        return;
+
+      }
       if (!rating) {
 
         showMessage(
@@ -514,7 +549,10 @@ const payload = {
         "success"
       );
 
-
+      localStorage.setItem(
+        REVIEW_STORAGE_KEY,
+        Date.now().toString()
+      );
       rating = 0;
 
       stars.forEach(
