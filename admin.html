@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NICE HAND｜服務評價管理後台</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Microsoft JhengHei",
+        Arial,
+        sans-serif;
+
+      background: #0b1322;
+      color: #172033;
+    }
+
+    .header {
+      background: #111c31;
+      color: white;
+      padding: 26px 20px;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .header h1 {
+      margin: 0 0 7px;
+      font-size: 26px;
+    }
+
+    .header p {
+      margin: 0;
+      color: #b9c3d5;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+
+    .label {
+      color: #687386;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .number {
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+
+    .section h2 {
+      margin: 0 0 18px;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #e7eaf0;
+      text-align: left;
+    }
+
+    th {
+      color: #687386;
+      font-size: 13px;
+    }
+
+    td {
+      font-size: 15px;
+    }
+
+    .good {
+      font-weight: 700;
+    }
+
+    .warning {
+      font-weight: 700;
+    }
+
+    .comment {
+      padding: 14px 0;
+      border-bottom: 1px solid #e7eaf0;
+    }
+
+    .comment:last-child {
+      border-bottom: 0;
+    }
+
+    .comment-date {
+      color: #8791a2;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .status {
+      text-align: center;
+      color: white;
+      padding: 30px;
+    }
+
+    .error {
+      color: #ffb4b4;
+    }
+
+    @media (max-width: 700px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="header-inner">
+      <h1>NICE HAND 服務評價管理後台</h1>
+      <p>會員服務滿意度統計</p>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div id="loading" class="status">
+      資料讀取中...
+    </div>
+
+    <div id="dashboard" style="display:none;">
+
+      <div class="summary">
+
+        <div class="card">
+          <div class="label">有效評價總數</div>
+          <div class="number" id="totalReviews">0</div>
+        </div>
+
+        <div class="card">
+          <div class="label">平均滿意度</div>
+          <div class="number" id="averageRating">0.0 ⭐</div>
+        </div>
+
+        <div class="card">
+          <div class="label">改善建議數</div>
+          <div class="number" id="commentCount">0</div>
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <h2>員工服務評價</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>員工</th>
+              <th>最喜歡票數</th>
+              <th>需要改善票數</th>
+            </tr>
+          </thead>
+
+          <tbody id="employeeTable">
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div class="section">
+
+        <h2>最近改善建議</h2>
+
+        <div id="comments">
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+
+  const SUPABASE_URL =
+    "https://hssaupoqeqaxpqglfzea.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_AgzsUiJbiaV-6jrzth4ODw_nQvXJKM4";
+
+  const client =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  async function loadDashboard() {
+
+    const loading =
+      document.getElementById("loading");
+
+    try {
+
+      const {
+        data: employees,
+        error: employeeError
+      } =
+        await client
+          .from("employees")
+          .select("*");
+
+      if (employeeError) {
+        throw employeeError;
+      }
+
+
+      const {
+        data: reviews,
+        error: reviewError
+      } =
+        await client
+          .from("reviews")
+          .select("*")
+          .eq("is_valid", true)
+          .order(
+            "created_at",
+            { ascending: false }
+          );
+
+      if (reviewError) {
+        throw reviewError;
+      }
+
+
+      const total =
+        reviews.length;
+
+      const ratings =
+        reviews
+          .map(r => Number(r.overall_rating))
+          .filter(r => r > 0);
+
+      const average =
+        ratings.length
+          ? ratings.reduce(
+              (a, b) => a + b,
+              0
+            ) / ratings.length
+          : 0;
+
+
+      const comments =
+        reviews.filter(
+          r =>
+            r.improvement_comment &&
+            r.improvement_comment.trim()
+        );
+
+
+      document
+        .getElementById("totalReviews")
+        .textContent =
+          total;
+
+      document
+        .getElementById("averageRating")
+        .textContent =
+          average.toFixed(1) + " ⭐";
+
+      document
+        .getElementById("commentCount")
+        .textContent =
+          comments.length;
+
+
+      const employeeTable =
+        document.getElementById(
+          "employeeTable"
+        );
+
+      employeeTable.innerHTML = "";
+
+
+      employees.forEach(employee => {
+
+        const favoriteCount =
+          reviews.filter(
+            r =>
+              r.favorite_employee_id ===
+              employee.id
+          ).length;
+
+        const unfriendlyCount =
+          reviews.filter(
+            r =>
+              r.unfriendly_employee_id ===
+              employee.id
+          ).length;
+
+
+        const row =
+          document.createElement("tr");
+
+        const name =
+          employee.name ||
+          employee.display_name ||
+          "未命名員工";
+
+
+        row.innerHTML = `
+          <td>${escapeHtml(name)}</td>
+
+          <td class="good">
+            ${favoriteCount}
+          </td>
+
+          <td class="warning">
+            ${unfriendlyCount}
+          </td>
+        `;
+
+        employeeTable.appendChild(row);
+
+      });
+
+
+      const commentsBox =
+        document.getElementById("comments");
+
+      commentsBox.innerHTML = "";
+
+
+      if (comments.length === 0) {
+
+        commentsBox.innerHTML =
+          "<div>目前沒有改善建議。</div>";
+
+      } else {
+
+        comments
+          .slice(0, 20)
+          .forEach(review => {
+
+            const item =
+              document.createElement("div");
+
+            item.className =
+              "comment";
+
+            const date =
+              review.created_at
+                ? new Date(
+                    review.created_at
+                  ).toLocaleString(
+                    "zh-TW"
+                  )
+                : "";
+
+            item.innerHTML = `
+              <div>
+                ${escapeHtml(
+                  review.improvement_comment
+                )}
+              </div>
+
+              <div class="comment-date">
+                ${escapeHtml(date)}
+              </div>
+            `;
+
+            commentsBox.appendChild(item);
+
+          });
+
+      }
+
+
+      loading.style.display =
+        "none";
+
+      document
+        .getElementById("dashboard")
+        .style.display =
+          "block";
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      loading.innerHTML =
+        '<span class="error">' +
+        '讀取資料失敗：' +
+        escapeHtml(
+          error.message || String(error)
+        ) +
+        '</span>';
+
+    }
+
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  loadDashboard();
+
+</script>
+
+</body>
+</html>
