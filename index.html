@@ -7,6 +7,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei",Arial,sans-serif;background:radial-gradient(circle at top,#263554 0%,#111827 38%,#070b12 100%);color:#f5f5f5;min-height:100vh}.container{width:92%;max-width:680px;margin:auto;padding:36px 0 70px}.header{text-align:center;margin-bottom:26px}.brand{color:#d7b56d;font-size:15px;letter-spacing:5px;font-weight:700;margin-bottom:10px}h1{margin:0;font-size:30px;font-weight:800}.subtitle{margin-top:12px;color:#aeb8c8;line-height:1.7;font-size:14px}.card{background:rgba(255,255,255,.97);color:#18202b;border-radius:18px;padding:24px;margin-bottom:18px;box-shadow:0 15px 45px rgba(0,0,0,.25)}.card-title{font-size:19px;font-weight:800;margin-bottom:8px}.card-note{color:#737d8c;font-size:13px;margin-bottom:15px;line-height:1.6}.item{padding:17px 0;border-bottom:1px solid #e8ebf0}.item:last-child{border-bottom:none;padding-bottom:2px}.item-title{font-size:15px;font-weight:700;margin-bottom:9px}.stars{display:flex;gap:8px}.star{border:0;background:none;font-size:35px;color:#d5d8dd;cursor:pointer;padding:0;line-height:1.2}.star.active{color:#d2a84c}.reason,input,textarea{width:100%;border:1px solid #d8dde5;border-radius:10px;padding:12px;font-size:16px;background:#fff;color:#202733;outline:none;font-family:inherit}.reason{margin-top:12px;min-height:66px;resize:vertical}.reason:focus,input:focus,textarea:focus{border-color:#b89752;box-shadow:0 0 0 3px rgba(184,151,82,.12)}label{display:block;font-size:14px;font-weight:700;margin:18px 0 8px}textarea{min-height:100px;resize:vertical}.submit{width:100%;border:0;border-radius:12px;padding:16px;margin-top:8px;font-size:17px;font-weight:800;color:#15191f;background:linear-gradient(135deg,#f2db9b,#c99f45);cursor:pointer}.submit:disabled{opacity:.55;cursor:not-allowed}.privacy{text-align:center;color:#929dad;font-size:12px;line-height:1.8;margin-top:18px}#message{display:none;margin-top:16px;padding:13px;border-radius:10px;font-size:14px;line-height:1.6}.success{display:block!important;background:#eaf8ef;color:#17663a}.error{display:block!important;background:#fff0f0;color:#a12d2d}.footer{text-align:center;margin-top:30px;color:#727d8c;font-size:12px;letter-spacing:1px}.required{color:#a77820;font-size:12px;font-weight:400}@media(max-width:520px){.container{width:94%;padding-top:26px}.card{padding:20px}h1{font-size:25px}.star{font-size:33px}}
+/* 聯絡資料選填區 */
+.contact-hint{font-size:13px;color:#657181;line-height:1.8;margin:4px 0 12px}
+.consent-row{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;font-weight:400;cursor:pointer;margin:18px 0 4px}
+.consent-row input{width:18px;height:18px;flex:none;margin:2px 0 0;accent-color:#b89752}
 </style>
 </head>
 <body>
@@ -15,17 +19,16 @@
 <section class="card"><div class="card-title">整體滿意度</div><div class="card-note">請依照本次的實際體驗給予評分</div><div class="item"><div class="item-title">本次服務整體滿意度 <span class="required">（必填）</span></div><div class="stars" data-field="overall_rating"></div></div></section>
 <section class="card"><div class="card-title">一、服務品質</div><div class="card-note">請依照實際接觸經驗評分；未接觸的項目可略過。</div><div id="serviceItems"></div></section>
 <section class="card"><div class="card-title">二、環境與整潔</div><div class="card-note">請依照現場環境的實際感受給予評分。</div><div id="environmentItems"></div></section>
-<section class="card"><div class="card-title">三、員工服務表現</div><div class="card-note">可直接填寫員工姓名或暱稱，不必從名單選取。</div><label for="favorite_employee_name">本次服務中，是否有讓您特別感到親切、值得肯定的員工？</label><input id="favorite_employee_name" maxlength="50" placeholder="員工姓名或暱稱（選填）"><textarea class="reason" id="favorite_employee_reason" maxlength="500" placeholder="讓您印象深刻的原因（選填）"></textarea><label for="improve_employee_name">是否有您認為服務態度或表現需要加強的員工？</label><input id="improve_employee_name" maxlength="50" placeholder="員工姓名或暱稱（選填）"><textarea class="reason" id="improve_employee_reason" maxlength="500" placeholder="您認為需要改善的原因（選填）"></textarea></section>
+<section class="card"><div class="card-title">三、員工服務表現</div><div class="card-note">可直接填寫員工姓名或暱稱，不必從名單選取。</div><label for="favorite_employee_name">本次服務中，是否有讓您特別感到親切、值得肯定的員工？</label><input id="favorite_employee_name" maxlength="50" placeholder="員工姓名或暱稱（選填）"><textarea class="reason" id="favorite_employee_reason" maxlength="500" placeholder="請盡量說明日期、約略時間、地點、當時發生的事情及員工的具體表現，方便我們了解並肯定同仁（選填）"></textarea><label for="improve_employee_name">是否有您認為服務態度或表現需要加強的員工？</label><input id="improve_employee_name" maxlength="50" placeholder="員工姓名或暱稱（選填）"><textarea class="reason" id="improve_employee_reason" maxlength="500" placeholder="請盡量說明日期、約略時間、地點、事件經過及相關人員，方便協會了解、查證並改善（選填）"></textarea></section>
 <section class="card"><div class="card-title">四、其他建議</div><div class="card-note">如果還有其他想法，歡迎告訴我們。</div><textarea id="improvement_comment" maxlength="500" placeholder="請輸入您的建議（選填）"></textarea></section>
-<section class="card"><button class="submit" id="submitBtn" type="button">送出評價</button><div id="message" role="status" aria-live="polite"></div><div class="privacy">本問卷不要求填寫會員姓名。<br>每台裝置原則上 30 天可填寫一次。<br>評價資料僅供 NICE HAND 內部服務品質改善使用。</div></section>
+<section class="card"><div class="card-title">五、後續聯繫（選填）</div><div class="card-note">我們重視每一位會員的意見。如果您願意留下聯絡方式，協會可在了解及改善相關問題後，向您回報處理情形。</div><p class="contact-hint">如不留下聯絡方式，也可以正常送出評價。</p><label for="contact_name">姓名（選填）</label><input id="contact_name" maxlength="60" autocomplete="name" placeholder="請輸入姓名"><label for="contact_phone">聯絡電話（選填）</label><input id="contact_phone" type="tel" maxlength="30" autocomplete="tel" placeholder="請輸入電話"><label for="contact_email">Email（選填）</label><input id="contact_email" type="email" maxlength="254" autocomplete="email" placeholder="請輸入電子郵件"><label class="consent-row" for="contact_consent"><input id="contact_consent" type="checkbox"><span>如我有留下聯絡資料，我同意 NICE HAND 僅為本次意見處理及回覆目的使用這些資料。</span></label></section>
+<section class="card"><button class="submit" id="submitBtn" type="button">送出評價</button><div id="message" role="status" aria-live="polite"></div><div class="privacy">本問卷可匿名填寫，且不限填寫次數。<br>評價資料僅供 NICE HAND 內部服務品質改善使用；自願提供的聯絡資料僅用於本次意見處理及回覆。</div></section>
 <div class="footer">NICE HAND SERVICE REVIEW</div>
 </div>
 <script>
 const SUPABASE_URL="https://hssaupoqeqaxpqglfzea.supabase.co";
 const SUPABASE_KEY="sb_publishable_AgzsUiJbiaV-6jrzth4ODw_nQvXJKM4";
 const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const REVIEW_STORAGE_KEY="nice_hand_last_review";
-const REVIEW_LIMIT_DAYS=30;
 const fields=[
 {group:"serviceItems",rating:"counter_rating",reason:"counter_reason",title:"櫃檯人員的接待與服務態度"},
 {group:"serviceItems",rating:"floor_rating",reason:"floor_reason",title:"場控人員的協助與應對"},
@@ -40,17 +43,20 @@ function addStars(element,field){for(let i=1;i<=5;i++){const button=document.cre
 addStars(document.querySelector('[data-field="overall_rating"]'),"overall_rating");
 fields.forEach(item=>{const box=document.createElement("div");box.className="item";const title=document.createElement("div");title.className="item-title";title.textContent=item.title;const stars=document.createElement("div");stars.className="stars";addStars(stars,item.rating);const reason=document.createElement("textarea");reason.className="reason";reason.id=item.reason;reason.maxLength=500;reason.placeholder="原因或建議（選填）";box.append(title,stars,reason);document.getElementById(item.group).appendChild(box);});
 function showMessage(message,type){const el=document.getElementById("message");el.textContent=message;el.className=type;el.scrollIntoView({behavior:"smooth",block:"nearest"});}
-function checkReviewLimit(){try{const last=Number(localStorage.getItem(REVIEW_STORAGE_KEY));return Number.isFinite(last)&&last>0&&Date.now()-last<REVIEW_LIMIT_DAYS*86400000;}catch{return false;}}
 function value(id){return document.getElementById(id).value.trim()||null;}
 const submitBtn=document.getElementById("submitBtn");
-if(checkReviewLimit()){submitBtn.disabled=true;submitBtn.textContent="30 天內已完成評價";showMessage("感謝您的回饋！本裝置近期已完成服務評價，每 30 天可填寫一次。","error");}
 submitBtn.addEventListener("click",async()=>{
-if(checkReviewLimit()){showMessage("本裝置近期已完成服務評價，每 30 天可填寫一次。","error");return;}
+if(submitBtn.disabled)return;
 if(!ratings.overall_rating){showMessage("請先選擇整體滿意度星等。","error");return;}
+const contactName=value("contact_name"),contactPhone=value("contact_phone"),contactEmail=value("contact_email");
+const hasContact=Boolean(contactName||contactPhone||contactEmail);
+const consent=document.getElementById("contact_consent").checked;
+if(contactEmail&&!document.getElementById("contact_email").checkValidity()){showMessage("Email 格式不正確，請確認後再送出。","error");return;}
+if(hasContact&&!consent){showMessage("您已填寫聯絡資料，請先勾選聯絡資料使用同意；若不希望留下資料，也可以清空聯絡欄位後匿名送出。","error");return;}
 submitBtn.disabled=true;submitBtn.textContent="送出中…";
-const payload={overall_rating:ratings.overall_rating,improvement_comment:value("improvement_comment"),favorite_employee_name:value("favorite_employee_name"),favorite_employee_reason:value("favorite_employee_reason"),improve_employee_name:value("improve_employee_name"),improve_employee_reason:value("improve_employee_reason")};
+const payload={overall_rating:ratings.overall_rating,improvement_comment:value("improvement_comment"),favorite_employee_name:value("favorite_employee_name"),favorite_employee_reason:value("favorite_employee_reason"),improve_employee_name:value("improve_employee_name"),improve_employee_reason:value("improve_employee_reason"),contact_name:hasContact?contactName:null,contact_phone:hasContact?contactPhone:null,contact_email:hasContact?contactEmail:null,contact_consent:hasContact&&consent};
 fields.forEach(item=>{payload[item.rating]=ratings[item.rating]||null;payload[item.reason]=value(item.reason);});
-try{const {error}=await client.from("reviews").insert([payload]);if(error)throw error;try{localStorage.setItem(REVIEW_STORAGE_KEY,String(Date.now()));}catch(e){console.warn("無法儲存本機填寫紀錄",e);}showMessage("感謝您的回饋，評價已成功送出！","success");submitBtn.textContent="評價已送出";}catch(error){console.error(error);showMessage("送出失敗，請稍後再試。","error");submitBtn.disabled=false;submitBtn.textContent="送出評價";}
+try{const {error}=await client.from("reviews").insert([payload]);if(error)throw error;showMessage("感謝您的回饋，評價已成功送出！","success");submitBtn.textContent="評價已送出（可重新整理再填寫）";}catch(error){console.error(error);showMessage("送出失敗，請稍後再試。","error");submitBtn.disabled=false;submitBtn.textContent="送出評價";}
 });
 </script>
 </body>
